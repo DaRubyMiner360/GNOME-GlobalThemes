@@ -1,0 +1,139 @@
+#!/usr/bin/env python
+
+import os
+import argparse
+
+
+# TODO: Add support for cursor themes
+themes = {
+    "fluent": {
+        "name": "Fluent",
+        "shell": {
+            "install": "git clone https://github.com/vinceliuice/Fluent-gtk-theme.git && cd Fluent-gtk-theme/ && ./install.sh -i arch --tweaks float --tweaks round && ./install.sh -i arch -c dark -l --tweaks float --tweaks round && cd .. && rm -rf Fluent-gtk-theme/",
+
+            "light": "Fluent-round-Light",
+            "light_compact": "Fluent-round-Light-compact",
+            "dark": "Fluent-round-Dark",
+            "dark_compact": "Fluent-round-Dark-compact"
+        },
+        "icon": {
+            "install": "git clone https://github.com/vinceliuice/Fluent-icon-theme.git && cd Fluent-icon-theme/ && ./install.sh -r && cd .. && rm -rf Fluent-icon-theme/",
+
+            "light": "Fluent-light",
+            "dark": "Fluent-dark"
+        },
+        "wallpaper": {
+            "install": "git clone -b Wallpaper https://github.com/vinceliuice/Fluent-gtk-theme.git && cd Fluent-gtk-theme/ && sudo ./install-gnome-backgrounds.sh && sudo cp wallpaper-4k/wallpaper-default-gradient.png /usr/share/backgrounds/fluent/fluent-gradient.png && sudo sed -i 's@<\\/wallpapers>@\\n  <wallpaper deleted=\"false\">\\n    <name>Fluent Theme Background<\\/name>\\n    <filename>\\/usr\\/share\\/backgrounds\\/fluent\\/fluent-gradient.png<\\/filename>\\n    <filename-dark>\\/usr\\/share\\/backgrounds\\/fluent-building\\/fluent-building-night.jpg<\\/filename-dark>\\n    <options>zoom<\\/options>\\n    <shade_type>solid<\\/shade_type>\\n    <pcolor>#3465a4<\\/pcolor>\\n    <scolor>#000000<\\/scolor>\\n  <\\/wallpaper>\\n<\\/wallpapers>@' /usr/share/gnome-background-properties/fluent.xml && cd .. && rm -rf Fluent-gtk-theme/",
+
+            "light": "/usr/share/backgrounds/fluent/fluent-gradient.png",
+            "dark": "/usr/share/backgrounds/fluent-building/fluent-building-night.jpg"
+        }
+    },
+    "lavanda": {
+        "name": "Lavanda",
+        "shell": {
+            "install": "git clone https://github.com/vinceliuice/Lavanda-gtk-theme.git && cd Lavanda-gtk-theme/ &&  ./install.sh -t standard -s compact && ./install.sh && ./install.sh -c dark -l -t standard && cd .. && rm -rf Lavanda-gtk-theme/",
+
+            "light": "Lavanda-Light",
+            "light_compact": "Lavanda-Light",
+            "dark": "Lavanda-Dark",
+            "dark_compact": "Lavanda-Dark"
+        },
+        "icon": {
+            "install": "git clone https://github.com/vinceliuice/Colloid-icon-theme.git && cd Colloid-icon-theme/ && ./install.sh -t purple && cd .. && rm -rf Colloid-icon-theme/",
+
+            "light": "Colloid-purple-light",
+            "dark": "Colloid-purple-dark"
+        },
+        "wallpaper": {
+            "install": "git clone https://github.com/vinceliuice/Lavanda-gtk-theme.git && cd Lavanda-gtk-theme/wallpaper/ && sudo ./install-gnome-backgrounds.sh && cd ../.. && rm -rf Lavanda-gtk-theme/",
+
+            "light": "/usr/share/backgrounds/Lavanda/wallpaper-wave-Light.png",
+            "dark": "/usr/share/backgrounds/Lavanda/wallpaper-wave-Dark.png"
+        }
+    },
+    "lavanda-sea": {
+        "name": "Lavanda Sea",
+        "shell": {
+            "install": "git clone https://github.com/vinceliuice/Lavanda-gtk-theme.git && cd Lavanda-gtk-theme/ && ./install.sh -t sea -s compact && ./install.sh -t sea && ./install.sh -c dark -l -t sea && cd .. && rm -rf Lavanda-gtk-theme/",
+
+            "light": "Lavanda-Sea-Light",
+            "light_compact": "Lavanda-Sea-Light",
+            "dark": "Lavanda-Sea-Dark",
+            "dark_compact": "Lavanda-Sea-Dark"
+        },
+        "icon": {
+            "install": "git clone https://github.com/vinceliuice/Colloid-icon-theme.git && cd Colloid-icon-theme/ && ./install.sh && cd .. && rm -rf Colloid-icon-theme/",
+
+            "light": "Colloid-light",
+            "dark": "Colloid-dark"
+        },
+        "wallpaper": {
+            "install": "git clone https://github.com/vinceliuice/Lavanda-gtk-theme.git && cd Lavanda-gtk-theme/wallpaper/ && sudo ./install-gnome-backgrounds.sh && cd ../.. && rm -rf Lavanda-gtk-theme/",
+
+            "light": "/usr/share/backgrounds/Lavanda/wallpaper-wave-Sea-Light.png",
+            "dark": "/usr/share/backgrounds/Lavanda/wallpaper-wave-Sea-Dark.png"
+        }
+    }
+}
+
+
+def list_themes():
+    print("Available themes:")
+    for key in themes.keys():
+        print("- " + key + ": '" + themes[key]["name"] + "'")
+
+
+def switch_theme(id, mode, compact):
+    from shutil import which
+
+    name_key = mode
+    if compact:
+        name_key += "_compact"
+    if mode == "light":
+        os.system(themes[id]["shell"]["install"].replace(" -c dark", " -c light"))
+    else:
+        os.system(themes[id]["shell"]["install"])
+    os.system(themes[id]["icon"]["install"])
+    os.system(themes[id]["wallpaper"]["install"])
+
+    if mode == "dark":
+        os.system('gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"')
+    else:
+        os.system('gsettings set org.gnome.desktop.interface color-scheme "default"')
+
+    os.system('gsettings set org.gnome.shell.extensions.user-theme name "' + themes[id]["shell"][name_key] + '"')
+    os.system('gsettings set org.gnome.desktop.interface gtk-theme "' + themes[id]["shell"][name_key] + '"')
+    os.system('gsettings set org.gnome.desktop.interface icon-theme "' + themes[id]["icon"][name_key] + '"')
+    # TODO: Add support for cursor themes
+    # os.system('gsettings set org.gnome.desktop.interface cursor-theme "' + themes[id]["cursor"][name_key] + '"')
+    os.system('gsettings set org.gnome.desktop.background picture-uri "file://' + themes[id]["wallpaper"]["light"] + '"')
+    os.system('gsettings set org.gnome.desktop.background picture-uri-dark "file://' + themes[id]["wallpaper"]["dark"] + '"')
+    os.system('gsettings set org.gnome.desktop.screensaver picture-uri "file://' + themes[id]["wallpaper"][name_key] + '"')
+
+    if which("stylepak") is not None:
+        os.system("stylepak install-system && stylepak install-user")
+
+    print("Switched to the '" + themes[id]["name"] + "' theme.")
+
+
+def main():
+    parser = argparse.ArgumentParser(description="CLI tool to install and switch between themes.")
+    parser.add_argument("command", choices=["list", "switch"], help="Choose a command: list or switch")
+    parser.add_argument("--theme", choices=list(themes.keys()), help="Name of the theme to switch to (required for 'switch' command)")
+    parser.add_argument("--mode", choices=["dark", "light"], help="Whether to use the dark or light variant of the selected theme", default="dark")
+    parser.add_argument("--compact", help="Uses the compact version of the selected theme (if it exists)", action="store_true")
+
+    args = parser.parse_args()
+
+    if args.command == "list":
+        list_themes()
+    elif args.command == "switch":
+        if args.theme:
+            switch_theme(args.theme, args.mode, args.compact)
+        else:
+            print("Error: Theme name is required for the 'switch' command.")
+
+
+if __name__ == "__main__":
+    main()
