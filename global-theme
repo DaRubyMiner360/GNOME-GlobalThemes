@@ -14,7 +14,9 @@ themes = {
             "light": "Fluent-round-Light",
             "light_compact": "Fluent-round-Light-compact",
             "dark": "Fluent-round-Dark",
-            "dark_compact": "Fluent-round-Dark-compact"
+            "dark_compact": "Fluent-round-Dark-compact",
+
+            "round_topbar": True
         },
         "icon": {
             "install": "git clone https://github.com/vinceliuice/Fluent-icon-theme.git && cd Fluent-icon-theme/ && ./install.sh -r && cd .. && rm -rf Fluent-icon-theme/",
@@ -37,7 +39,9 @@ themes = {
             "light": "Lavanda-Light",
             "light_compact": "Lavanda-Light",
             "dark": "Lavanda-Dark",
-            "dark_compact": "Lavanda-Dark"
+            "dark_compact": "Lavanda-Dark",
+
+            "round_topbar": False
         },
         "icon": {
             "install": "git clone https://github.com/vinceliuice/Colloid-icon-theme.git && cd Colloid-icon-theme/ && ./install.sh -t purple && cd .. && rm -rf Colloid-icon-theme/",
@@ -60,7 +64,9 @@ themes = {
             "light": "Lavanda-Sea-Light",
             "light_compact": "Lavanda-Sea-Light",
             "dark": "Lavanda-Sea-Dark",
-            "dark_compact": "Lavanda-Sea-Dark"
+            "dark_compact": "Lavanda-Sea-Dark",
+
+            "round_topbar": False
         },
         "icon": {
             "install": "git clone https://github.com/vinceliuice/Colloid-icon-theme.git && cd Colloid-icon-theme/ && ./install.sh && cd .. && rm -rf Colloid-icon-theme/",
@@ -73,6 +79,31 @@ themes = {
 
             "light": "/usr/share/backgrounds/Lavanda/wallpaper-wave-Sea-Light.png",
             "dark": "/usr/share/backgrounds/Lavanda/wallpaper-wave-Sea-Dark.png"
+        }
+    },
+    "orchis": {
+        "name": "Orchis",
+        "shell": {
+            "install": "git clone https://github.com/vinceliuice/Orchis-theme.git && cd Orchis-theme/ && ./install.sh && ./install.sh -c dark -l && cd .. && rm -rf Orchis-theme/",
+
+            "light": "Orchis-Light",
+            "light_compact": "Orchis-Light-Compact",
+            "dark": "Orchis-Dark",
+            "dark_compact": "Orchis-Dark-Compact",
+            
+            "round_topbar": True
+        },
+        "icon": {
+            "install": "git clone https://github.com/vinceliuice/Tela-icon-theme.git && cd Tela-icon-theme/ && ./install.sh && cd .. && rm -rf Tela-icon-theme/",
+
+            "light": "Tela-light",
+            "dark": "Tela-dark"
+        },
+        "wallpaper": {
+            "install": "git clone https://github.com/vinceliuice/Orchis-theme.git && cd Orchis-theme/src/wallpaper/ && sudo mkdir -p /usr/share/backgrounds/orchis/ && sudo cp * /usr/share/backgrounds/orchis/ && cd ../../.. && rm -rf Orchis-theme/",
+
+            "light": "/usr/share/backgrounds/orchis/4k.jpg",
+            "dark": "/usr/share/backgrounds/orchis/4k.jpg"
         }
     }
 }
@@ -110,6 +141,11 @@ def switch_theme(id, mode, compact):
     os.system('gsettings set org.gnome.desktop.background picture-uri "file://' + themes[id]["wallpaper"]["light"] + '"')
     os.system('gsettings set org.gnome.desktop.background picture-uri-dark "file://' + themes[id]["wallpaper"]["dark"] + '"')
     os.system('gsettings set org.gnome.desktop.screensaver picture-uri "file://' + themes[id]["wallpaper"][name_key] + '"')
+
+    if themes[id]["shell"]["round_topbar"]:
+        os.system('dconf write /org/gnome/shell/extensions/blur-my-shell/panel/blur false')
+    else:
+        os.system('dconf write /org/gnome/shell/extensions/blur-my-shell/panel/blur true')
 
     if which("stylepak") is not None:
         os.system("stylepak install-system && stylepak install-user")
